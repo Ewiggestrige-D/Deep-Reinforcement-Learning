@@ -117,7 +117,7 @@ $$
       6. Update the parameters of $Q$ to make $Q(s_i,a_i)$,close to Target $y$ (regression)
       7. Every $N$ steps reset $\hat{Q} \leftarrow Q$ ($N$ is a **hyperparameter**)
 
-### **Q-Learning** for continious actions
+
 
 
 ## Appendix  状态价值函数与状态-动作价值函数的差异
