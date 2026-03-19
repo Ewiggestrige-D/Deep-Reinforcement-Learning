@@ -198,3 +198,84 @@ $$
 - If episode lengths are always finite ($H < \infty$), can use $\gamma =1$
 - $\gamma =0$: Only care about **immediate reward**
 - $\gamma =1$: **Future reward** is as beneficial as *immediate reward*
+
+### Computing the Value of a Markov Reward Process
+- Markov property provides structure
+- MRP value function satisfies
+  $$V(s) = \underbrace{R(s)}_{\text{Immediate reward}} + \underbrace{\gamma \sum_{s' \in S}P(s'|s)V(s')}_{\text{Discounted sum of future rewards}} 
+  $$
+- For finite state MRP, we can express V(s) using a matrix equation
+$$\begin{pmatrix}
+V(s_1) \\
+\vdots \\
+V(s_N)
+\end{pmatrix} = 
+\begin{pmatrix}
+R(s_1) \\
+\vdots \\
+R(s_N)
+\end{pmatrix} +
+\gamma \begin{pmatrix}
+    P(s_1|s_1) & P(s_2|s_1) & \dots & P(s_N|s_1) \\
+    P(s_1|s_2) & P(s_2|s_2) & \dots & P(s_2|s_N) \\
+    \vdots & \vdots & \ddots &\vdots \\
+    P(s_1|s_N) & P(s_2|s_N) & \dots & P(s_N|s_N)
+\end{pmatrix}
+\begin{pmatrix}
+V(s_1) \\
+\vdots \\
+V(s_N)
+\end{pmatrix}
+$$
+where
+$$\begin{aligned}
+    V & = R+\gamma PV \\
+    V - \gamma PV & = R\\
+    (\mathbb{I} -\gamma P)V & =R \\
+    V & =(\mathbb{I} -\gamma P)^{-1}R
+  \end{aligned}
+$$
+- Solving directly requires taking a matrix inverse $\sim O(N^3)$
+- Note that $(\mathbb{I} -\gamma P)$ is invertible
+
+---
+**“Note that $(\mathbb{I} - \gamma P)$ is invertible”**
+
+这句话强调了一个**关键的数学性质**：
+
+- 虽然不是所有矩阵都可逆，但在这个特定情况下，**$(\mathbb{I} - \gamma P)$ 一定是可逆的**，因此公式 $V = (\mathbb{I} - \gamma P)^{-1} R$ 是**良定义的（well-defined）**。
+- **为什么可逆？**  
+  原因在于：
+  - $P$ 是一个**随机矩阵**（每一行是非负数且和为 1）；
+  - 折扣因子 $\gamma \in [0, 1)$（通常严格小于 1）；
+  - 因此，矩阵 $\gamma P$ 的**谱半径（spectral radius）小于 1**；
+  - 根据线性代数中的**Neumann 级数理论**，若 $\rho(\gamma P) < 1$，则 $(\mathbb{I} - \gamma P)$ 可逆，且其逆可表示为：
+    $$
+    (\mathbb{I} - \gamma P)^{-1} = \sum_{k=0}^{\infty} (\gamma P)^k
+    $$
+    这恰好对应了**未来折扣回报的无穷展开**！
+
+> ✅ 所以，这个可逆性保证了 MRP 的值函数**存在且唯一**，这是强化学习理论的重要基础。
+
+
+#### 总结
+
+| 语句 | 含义 |
+|------|------|
+| “$(\mathbb{I} - \gamma P)$ is invertible” | 保证了解的存在性和唯一性，理论上有闭式解 |
+
+---
+
+
+### Iterative Algorithm for Computing Value of a MRP
+- Dynamic programming
+- Initialize $V_{0}(s) = 0$ for all $s$
+- For $k = 1$ until convergence
+  - For all $s \in S$
+  $$V_{k}(s) = R(s) +\gamma \sum_{s'\in S}P(s'|s)V_{k-1}(s')$$
+- Computational complexity: $O(|S|^2)$ for each iteration ($|S| = N$)
+
+### Summary of Today
+- Reinforcement learning involves learning, optimization, delayed consequences, generalization and exploration
+- Goal is to learn to make good decisions under uncertainty
+
